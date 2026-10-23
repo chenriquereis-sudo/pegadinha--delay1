@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Central de Segurança</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#080b10; color:#e8edf5; font:16px/1.5 Arial, sans-serif; }
+  .top { padding:14px 20px; background:#121923; border-bottom:1px solid #293545; display:flex; gap:12px; align-items:center; }
+  .dot { width:12px;height:12px;border-radius:50%;background:#ff3b45;box-shadow:0 0 14px #ff3b45; }
+  .brand { font-weight:700; letter-spacing:.04em; }
+  .wrap { width:min(760px,92vw); margin:7vh auto; }
+  .panel { border:1px solid #71343b; background:#11151d; border-radius:16px; padding:clamp(20px,5vw,36px); box-shadow:0 0 45px #7a111b22; }
+  .tag { color:#ff7079; font-size:12px; font-weight:bold; letter-spacing:.15em; }
+  h1 { font-size:clamp(26px,5vw,42px); line-height:1.1; margin:12px 0; }
+  .sub { color:#aab5c5; }
+  .meter { height:12px; border-radius:20px; background:#252d39; overflow:hidden; margin:20px 0 8px; }
+  .bar { width:0%; height:100%; background:linear-gradient(90deg,#ff414d,#ff9a45); transition:width .35s; }
+  .status { display:flex; justify-content:space-between; gap:12px; color:#c8d0dc; font-size:14px; }
+  .log { background:#080b10; border:1px solid #273140; padding:14px; border-radius:10px; margin:22px 0; min-height:100px; font:13px/1.8 ui-monospace,monospace; color:#ff9ca2; }
+  .actions { display:flex; gap:10px; flex-wrap:wrap; }
+  button { border:0; border-radius:9px; padding:12px 17px; font-weight:700; cursor:pointer; }
+  #start { background:#ff4652; color:#160609; }
+  #exit { background:#263140; color:#f0f4fa; }
+  .fine { color:#8491a3; font-size:12px; margin-top:18px; }
+  .glitch { animation: jitter .14s steps(2,end) 4; }
+  @keyframes jitter { 0%{transform:translate(0)} 25%{transform:translate(2px,-1px)} 50%{transform:translate(-2px,1px)} 75%{transform:translate(1px,2px)} 100%{transform:translate(0)} }
+  .reveal { display:none; text-align:center; padding:25px 0 5px; }
+  .reveal h2 { color:#79f2ad; }
+  body.demo { background:#14080b; }
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation:none!important; transition:none!important; } }
+</style>
+</head>
+<body>
+<header class="top"><span class="dot"></span><span class="brand">CENTRAL DE SEGURANÇA</span><span style="margin-left:auto;color:#8c9aac;font-size:12px">SIMULAÇÃO LOCAL</span></header>
+<main class="wrap">
+<section class="panel" id="panel">
+  <div class="tag">AVISO DE SISTEMA • DEMONSTRAÇÃO</div>
+  <h1 id="headline">Verificação de segurança iniciada</h1>
+  <p class="sub" id="desc">Preparando diagnóstico visual do dispositivo. Nenhum arquivo será acessado ou alterado.</p>
+  <div class="meter"><div class="bar" id="bar"></div></div>
+  <div class="status"><span id="state">Aguardando início</span><span id="pct">0%</span></div>
+  <div class="log" id="log" aria-live="polite">[SIMULAÇÃO] Pronto para iniciar.<br>[SISTEMA] Nenhuma alteração será feita.</div>
+  <div class="actions"><button id="start">Iniciar simulação</button><button id="exit">Sair / fechar</button></div>
+  <div class="fine">Pegadinha visual segura: não é um antivírus real. Não usa câmera, microfone, downloads ou acesso a arquivos.</div>
+  <div class="reveal" id="reveal"><h2>😄 PEGADINHA!</h2><p>Era só uma simulação visual. Seu Chromebook não foi infectado.</p><button id="again">Repetir</button></div>
+</section>
+</main>
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ let timer = null, progress = 0, lines = [];
+ const messages = [
+  "Inicializando verificação visual...",
+  "Analisando pixels da tela... (simulado)",
+  "Detectando lentidão fictícia...",
+  "Atenção: nível de drama em 87%!",
+  "Quase pronto... não entre em pânico 😅",
+  "Finalizando simulação segura..."
+ ];
+ function addLine(s) {
+   lines.push("[SIMULAÇÃO] " + s);
+   $("log").innerHTML = lines.slice(-5).map(x => x.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")).join("<br>");
+ }
+ function reset() {
+   clearInterval(timer); timer = null; progress = 0; lines = [];
+   $("bar").style.width = "0%"; $("pct").textContent = "0%";
+   $("state").textContent = "Aguardando início";
+   $("headline").textContent = "Verificação de segurança iniciada";
+   $("desc").textContent = "Preparando diagnóstico visual do dispositivo. Nenhum arquivo será acessado ou alterado.";
+   $("start").style.display = "inline-block"; $("reveal").style.display = "none";
+   $("log").textContent = "[SIMULAÇÃO] Pronto para iniciar.";
+   document.body.classList.remove("demo"); $("panel").classList.remove("glitch");
+ }
+ $("start").addEventListener("click", () => {
+   $("start").style.display = "none"; $("state").textContent = "Executando demonstração";
+   $("headline").textContent = "Atividade suspeita detectada!";
+   $("desc").textContent = "Calma: os avisos e a lentidão abaixo são efeitos falsos desta página.";
+   addLine("Iniciando diagnóstico fictício...");
+   timer = setInterval(() => {
+     progress = Math.min(100, progress + 7 + Math.floor(Math.random()*8));
+     $("bar").style.width = progress + "%"; $("pct").textContent = progress + "%";
+     $("state").textContent = progress < 40 ? "Verificando..." : progress < 80 ? "Processando alerta..." : "Concluindo...";
+     addLine(messages[Math.min(messages.length-1, Math.floor(progress/18))]);
+     if (progress >= 30 && progress < 75) { document.body.classList.add("demo"); $("panel").classList.add("glitch"); setTimeout(()=>$("panel").classList.remove("glitch"),600); }
+     if (progress >= 100) {
+       clearInterval(timer); timer = null;
+       $("headline").textContent = "Diagnóstico concluído";
+       $("desc").textContent = "Resultado: 0 ameaças reais. Esta página só exibiu efeitos visuais.";
+       $("state").textContent = "Simulação encerrada";
+       $("reveal").style.display = "block";
+       $("log").innerHTML += "<br>[OK] Nenhum arquivo ou configuração foi alterado.";
+       document.body.classList.remove("demo");
+     }
+   }, 650);
+ });
+ function leave() { clearInterval(timer); document.body.classList.remove("demo"); document.body.innerHTML = '<main style="font:18px Arial;text-align:center;margin:18vh auto;max-width:560px;padding:24px;color:#e8edf5"><h1>Simulação encerrada</h1><p>Você pode fechar esta aba com segurança.</p><button onclick="window.close()" style="padding:12px 18px;border:0;border-radius:8px;cursor:pointer">Fechar aba</button></main>'; }
+ $("exit").addEventListener("click", leave);
+ $("again").addEventListener("click", reset);
+})();
+</script>
+</body>
+</html>
